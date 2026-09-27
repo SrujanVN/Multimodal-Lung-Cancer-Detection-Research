@@ -315,13 +315,13 @@ h3 {
 
 /* Background images for boxes */
 .xray-box {
-    background-image: url('../images/xray-lung.jpeg');
+    background-image: url('/images/xray-lung.jpeg');
     background-size: cover;
     background-position: center;
 }
 
 .ct-box {
-    background-image: url('../images/ct-lung.jpeg');
+    background-image: url('/images/ct-lung.jpeg');
     background-size: cover;
     background-position: center;
 }

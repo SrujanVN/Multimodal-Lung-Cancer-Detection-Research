@@ -1,70 +1,132 @@
-# Lung Cancer Detection — Frontend
+# Lung Cancer Detection Research Platform
 
-A React and TypeScript web client for a research platform exploring lung disease analysis across CT scans, lung X-rays, and clinical data. The frontend communicates with the Flask API supplied by the full project; this repository contains the frontend client only and does not contain model weights, patient datasets, API keys, or the backend implementation.
+A research and education web application for exploring lung disease image and clinical-data classification. The project brings a React interface together with a Flask API, trained PyTorch models, explainability views, saved notebook results, and an educational chat assistant.
 
-## Capabilities
+> **Research use only.** Predictions and explanations are experimental model outputs. They are not diagnoses, screening decisions, or treatment advice. Do not use this application to make decisions about a person's care. A qualified healthcare professional must interpret clinical findings.
 
-- CT and lung X-ray analysis screens backed by the model outputs returned by Flask.
-- Clinical assessment using remembered details or an uploaded CSV, with cohort SHAP and LIME explanations when provided by the API.
-- Per-analysis class probabilities, model outputs, image explanations, and downloadable reports.
-- A lung-disease educational assistant connected to the backend chat API.
-- A documentation view with saved notebook test metrics, original confusion-matrix plots, and explicit evaluation limitations.
-- Responsive layouts, accessible labels, analysis loading indicators, and an interactive 3D lung model served by the backend.
+## What is included
 
-All model scores and explanations describe experimental model behavior. They are not diagnoses, medical advice, proof of disease, or evidence of clinical readiness. The synthetic CSV is artificial demo data and is not suitable for patient care or clinical research.
+- **CT image analysis:** ResNet50, DenseNet121, Inception-v3, and EfficientNet-B3 checkpoints, with individual-model and ensemble workflows.
+- **Lung X-ray analysis:** ResNet50, DenseNet121, Inception-v3, and EfficientNet-B3 checkpoints, with individual-model and ensemble workflows. The labels in this research dataset include thoracic/lung findings and are not a cancer-only diagnosis.
+- **Clinical data analysis:** a trained tabular MLP and scaler for individual entries and CSV cohorts. Local LIME explanations and cohort SHAP and LIME summaries are generated when the corresponding packages are available.
+- **Image explainability:** Grad-CAM and LIME overlays are provided to help inspect model behavior. Highlighted pixels do not establish disease.
+- **Educational chat:** a lung-cancer information assistant with safety guidance and source links. Gemini is optional and configured on the backend using an environment variable.
+- **Research transparency:** training/evaluation notebooks, selected saved confusion-matrix figures, and a clearly labelled synthetic clinical CSV example.
+- **Application pages:** analysis, report download, sign-in/registration, project information, documentation, and a responsive React frontend.
 
-## Requirements
+## Repository layout
 
-- Node.js 18 or newer and npm.
-- The full project’s Flask backend running locally at `http://127.0.0.1:5000` for analysis, login, chat, reports, model assets, and other API-backed features.
+```text
+.
+├── app.py                         # Flask API and server-rendered routes
+├── chatbot/                       # Educational assistant service, sources, Sheets script
+├── docs/                          # Project documentation artifacts
+├── frontend/                      # React + TypeScript + Vite interface
+│   └── public/notebook-results/   # Selected notebook confusion-matrix figures
+├── lungcancer_csv_Notebook.ipynb  # Clinical model research notebook
+├── models/
+│   ├── ct_models/                 # Four CT model checkpoints
+│   ├── xray models/               # Four lung X-ray model checkpoints
+│   └── csv_best_model.pth         # Clinical MLP checkpoint
+├── notebooks/
+│   ├── ct notebooks/
+│   └── xray notebooks/
+├── scaler.pkl                     # Clinical feature scaler
+├── static/                        # Flask static assets and 3D lung model
+├── templates/                     # Flask templates
+├── requirements.txt
+└── README.md
+```
+
+Local secrets, virtual environments, dependency folders, generated reports/uploads, user database files, and caches are intentionally excluded from version control.
+
+## Technology
+
+- Frontend: React 19, TypeScript, Vite, Tailwind CSS, Lucide icons, and Google `<model-viewer>`.
+- Backend: Flask, PyTorch/torchvision, scikit-learn, SHAP, LIME, Matplotlib, ReportLab, and Google GenAI SDK.
+- Authentication: Flask-backed user registration and login. Keep local database files private; do not commit them.
 
 ## Run locally
 
-1. Start the Flask backend from the full project directory containing `app.py`:
+### Requirements
 
-   ```powershell
-   .\.venv\Scripts\python.exe app.py
-   ```
+- Python 3.10 or newer (the notebooks record Python 3.11).
+- Node.js and npm.
+- Enough memory and disk space for PyTorch, the model checkpoints, and image inference. A CUDA-enabled PyTorch install is optional; CPU inference may be slower.
 
-   Use the backend project’s documented environment setup if you have not created its virtual environment yet.
+### Backend
 
-2. In another terminal, start the frontend:
-
-   ```powershell
-   cd frontend
-   npm ci
-   npm run dev -- --host 127.0.0.1
-   ```
-
-3. Open [http://127.0.0.1:5173](http://127.0.0.1:5173).
-
-The Vite development server proxies API and session requests to the Flask server on port 5000. Analysis requires a working backend and any required sign-in session. The hero’s 3D model is loaded from the backend’s `/static/models/realistic_human_lungs.glb` asset.
-
-## Main API routes used by the client
-
-- `GET /api/health` and `GET /api/models` for backend status and available models.
-- `POST /api/predict/image` for CT or lung X-ray uploads.
-- `POST /api/predict/clinical` for manually entered clinical inputs.
-- `POST /api/predict/csv` for clinical cohort CSV analysis.
-- `POST /api/chat` for the educational assistant.
-- `POST /download_report` for report generation.
-- `/login` and `/register` for backend-managed authentication.
-
-The exact response values and available explanation images depend on the backend and its loaded checkpoints. The client does not manufacture missing model metrics or history.
-
-## Build
+From the repository root, create and activate a virtual environment, install the dependencies, and create a private `.env` file from the example:
 
 ```powershell
-npm run build
-npm run preview
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+Copy-Item .env.example .env
 ```
 
-The production frontend must be served alongside a configured backend for API-backed features to work.
+Edit `.env` locally. Keep all values private and never commit this file. `SECRET_KEY` should be a long random value. Set `GEMINI_API_KEY` only if you want Gemini-backed chat. The Google Sheets webhook fields are optional and should only be configured with a protected endpoint and an explicit privacy notice. Do not record passwords or other authentication secrets in a spreadsheet.
 
-## Secrets and privacy
+Start Flask:
 
-Never put Gemini keys, Flask secrets, or other private credentials in frontend source or `VITE_*` variables. Configure secrets only on the backend using its private environment file, which must not be committed. This frontend sends requests to the local backend; chat responses and uploaded data are handled according to the backend implementation.
+```powershell
+python app.py
+```
 
-## Research transparency
+The API defaults to `http://127.0.0.1:5000`. Check `GET /api/health` to confirm the server is responding. The API also exposes `GET /api/models`, `POST /api/predict/image`, `POST /api/predict/clinical`, `POST /api/predict/csv`, and `POST /api/chat`. The image/CSV endpoints accept multipart form data; see the frontend service in `frontend/src/services/api.ts` and `app.py` for the current request/response fields.
 
-The Documentation page shows values saved in the project notebooks, not freshly measured or independently validated results. The CT and lung X-ray notebooks include an `UNKNOWN` class made from generic Unsplash images; this does not establish reliable recognition of unfamiliar medical images. Image-level splits do not establish patient-level separation. Review the full project’s notebooks and dataset notes before interpreting the reported scores.
+### Frontend
+
+In a second terminal:
+
+```powershell
+cd frontend
+npm ci
+npm run dev
+```
+
+Open the local URL printed by Vite (normally `http://127.0.0.1:5173`). The Vite development server proxies `/api` and `/static` requests to the Flask server. For a production frontend bundle, run `npm run build` from `frontend/`; serve the generated `frontend/dist` with your chosen hosting setup and configure the API origin accordingly.
+
+## Models and data
+
+The checkpoints in `models/` are the trained artifacts currently wired into this project. CT and X-ray checkpoints are approximately 28–98 MB each. Clinical inference expects the 15 feature columns and encoding/scaling order implemented by the backend and described in the clinical notebook. Use the included synthetic CSV only to understand the required format; its rows are fabricated examples, not patient data or research observations.
+
+Notebook outputs include high test-set scores and confusion matrices. These are reproduced from the saved notebooks, not an independent validation. In particular, the notebook workflows do not establish patient-level separation for image data, and the X-ray workflows include an `UNKNOWN` class built from generic web images. These design choices can inflate or distort reported metrics. Treat all scores as exploratory; they do not demonstrate clinical validity, generalization, or safety. Review dataset provenance, licensing, label quality, subject-level splitting, and external validation before making research claims.
+
+## Explainability
+
+- **Grad-CAM** produces a coarse spatial map of image regions that influenced a selected convolutional model output.
+- **Image LIME** probes predictions using perturbed image regions and shows which superpixels locally affected the output.
+- **Clinical LIME** describes local feature contributions for an individual row.
+- **CSV SHAP and LIME** summarize how features contributed to the model outputs across a submitted cohort.
+
+These methods describe model behavior under their assumptions; they do not show causal factors, confirm a lesion, or prove that a model is correct. SHAP/LIME may be unavailable when optional dependencies are missing.
+
+## Chat assistant and sources
+
+The chat service is educational and application-aware. It can explain general lung-cancer concepts, the application's models, and common explainability terms. When configured, it uses the Gemini API key stored in backend environment configuration; never place the key in frontend code or commit it. The service also includes selected National Cancer Institute references. Retrieved links and generated answers should still be checked against current authoritative medical information. The chatbot must not diagnose, prescribe, or replace a clinician.
+
+## Privacy and security
+
+- Never commit `.env`, API keys, passwords, database files, user uploads, generated reports, or personal medical information.
+- Run this project only with data you are authorized to process. Use synthetic or appropriately de-identified data for demonstrations.
+- Provide clear notice and consent before collecting or exporting any user information. Authentication logs should not contain passwords or unnecessary identifiers.
+- Configure production secrets, HTTPS, access controls, secure session cookies, request limits, and retention/deletion policies before deployment. The local research setup is not a production security review.
+- Check dataset and model licenses and attribution requirements before redistributing or deploying artifacts.
+
+## Troubleshooting
+
+- **Model not found:** run the backend from the repository root and check that every expected checkpoint under `models/` is present.
+- **Chat says the model is not configured:** add a valid `GEMINI_API_KEY` to the backend `.env`, then restart Flask. Never add the key to Vite variables or browser code.
+- **SHAP/LIME unavailable:** install the pinned backend requirements in the active environment and restart Flask.
+- **Frontend cannot reach the API:** confirm Flask is listening on port 5000 and use the Vite development server configuration in `frontend/vite.config.ts`.
+- **Slow image explanations:** image explainability can require many inference passes, particularly on CPU.
+
+## Responsible use
+
+This repository is a research prototype, not a medical device. Outputs may be inaccurate, biased, poorly calibrated, or affected by data leakage and dataset shift. Never use a prediction to diagnose, rule out disease, select treatment, or delay care. For symptoms or findings, consult a qualified healthcare professional; for severe or rapidly worsening symptoms, seek urgent medical care.
+
+## License and acknowledgements
+
+No license file is included at present. Unless a license is added, reuse and redistribution rights are not granted by this README. Check the licenses of the training data, pretrained weights, model checkpoints, 3D asset, and third-party packages before redistribution. Add dataset citations and source attributions here as their provenance is confirmed.

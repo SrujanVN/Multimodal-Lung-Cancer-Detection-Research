@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+ENV/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+
+# Environment variables
+.env
+
+# Uploads / Reports (if you don't want these)
+static/uploads/
+static/reports/
+static/videos/
+instance/
+.venv/
+.matplotlib-cache/
+static/mpl-cache/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+frontend/build-output.txt
+*.log
+*.tmp
+*.bak
+Thumbs.db

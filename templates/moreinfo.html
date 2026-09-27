@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lung Cancer Info</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="text-center text-danger mb-4">More About Lung Cancer</h1>
+        <div class="card shadow p-4">
+            <p>Lung cancer is a type of cancer that begins in the lungs. It's one of the leading causes of cancer deaths worldwide. There are two main types: Non-small cell lung cancer and Small cell lung cancer.</p>
+            <h5 class="text-primary">Symptoms</h5>
+            <ul>
+                <li>Persistent cough</li>
+                <li>Shortness of breath</li>
+                <li>Chest pain</li>
+                <li>Weight loss</li>
+            </ul>
+
+            <h5 class="text-primary">Causes</h5>
+            <ul>
+                <li>Smoking (major risk factor)</li>
+                <li>Exposure to radon gas</li>
+                <li>Asbestos and other carcinogens</li>
+            </ul>
+
+            <h5 class="text-primary">Prevention</h5>
+            <ul>
+                <li>Avoid smoking</li>
+                <li>Regular check-ups</li>
+                <li>Healthy lifestyle</li>
+            </ul>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('about') }}" class="btn btn-secondary">Back to Intro</a>
+        </div>
+    </div>
+</body>
+</html>

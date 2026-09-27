@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LungVision AI - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="font-['Inter'] bg-gradient-to-br from-blue-900 to-teal-900 min-h-screen flex items-center justify-center">
+    <div class="bg-white/10 glass-effect p-6 sm:p-8 rounded-xl shadow-lg text-center">
+        <h2 class="text-2xl font-bold text-teal-400 mb-4">Welcome to Dashboard</h2>
+        <p class="text-gray-300">You are logged in! Add your dashboard content here.</p>
+        <a href="{{ url_for('diagnosis') }}" class="mt-4 inline-block bg-teal-600 text-white p-2 rounded hover:bg-teal-700 transition duration-300">Go to Diagnosis</a>
+    </div>
+</body>
+</html>

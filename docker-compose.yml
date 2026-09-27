@@ -1,0 +1,41 @@
+
+
+services:
+  lungvision-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lungvision_ai
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persist database and uploads
+      - ./instance:/app/instance
+      - ./static/uploads:/app/static/uploads
+      # Mount models (read-only for security)
+      - ./models:/app/models:ro
+      - ./scaler.pkl:/app/scaler.pkl:ro
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - SECRET_KEY=${SECRET_KEY}
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - lungvision-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  lungvision-network:
+    driver: bridge
+
+volumes:
+  uploads-data:
+  instance-data:

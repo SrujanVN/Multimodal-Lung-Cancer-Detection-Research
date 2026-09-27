@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lung Cancer Detection | About</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="text-center mb-4 fw-bold text-primary">Welcome to Lung Cancer Detection App</h1>
+        <div class="card shadow p-4 mb-5">
+            <h3 class="text-secondary">🛠️ Tools & Technologies Used</h3>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Python, Flask</li>
+                <li class="list-group-item">Deep Learning (CNN, Ensembling)</li>
+                <li class="list-group-item">PyTorch, Pandas, Numpy</li>
+                <li class="list-group-item">Bootstrap, HTML5, CSS3, JavaScript</li>
+            </ul>
+        </div>
+
+        <div class="card shadow p-4 mb-5">
+            <h3 class="text-secondary">🤝 Connect with Us</h3>
+            <div class="d-flex justify-content-around">
+                <!-- Example Team Member -->
+                <div class="text-center">
+                    <h5>Mohammed Adan</h5>
+                    <a href="https://github.com/yourgithub" class="me-2"><i class="fab fa-github fa-2x"></i></a>
+                    <a href="https://linkedin.com/in/yourlinkedin" class="me-2"><i class="fab fa-linkedin fa-2x"></i></a>
+                    <a href="mailto:youremail@example.com"><i class="fas fa-envelope fa-2x"></i></a>
+                </div>
+                <!-- Add teammates similarly -->
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('moreinfo') }}" class="btn btn-info btn-lg mx-2">More Info</a>
+            <a href="{{ url_for('home') }}" class="btn btn-success btn-lg mx-2">Enter Application</a>
+        </div>
+    </div>
+</body>
+</html>

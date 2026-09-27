@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multimodal Lung Cancer Detection</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <style>
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px rgba(20, 184, 166, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(20, 184, 166, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(20, 184, 166, 0.5); }
+    }
+    .glow-animate {
+  animation: glow 3s ease-in-out infinite; 
+}
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .spin {
+      animation: spin 0.5s ease-in-out;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .pulse-animate {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .login-btn-glow {
+      transition: all 0.3s ease-in-out;
+    }
+    .login-btn-glow:hover {
+      box-shadow: 0 0 25px rgba(20, 184, 166, 1);
+      transform: scale(1.05);
+    }
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .live-wallpaper {
+      background: linear-gradient(45deg, #1e3a8a, #0d9488, #4b5563, #1e3a8a);
+      background-size: 400% 400%;
+      animation: gradientAnimation 15s ease infinite;
+      background-attachment: fixed;
+    }
+    body {
+      background: linear-gradient(to bottom right, #f3f4f6, #e0f7fa, #ccfbf1);
+      color: #1f2937;
+      transition: opacity 0.5s ease-in-out;
+        
+        -webkit-font-smoothing: antialiased;
+         will-change: scroll-position;
+    }
+    body.dark {
+      background: linear-gradient(to bottom right, #111827, #1e3a8a, #0d9488);
+      color: #f3f4f6;
+    }
+    body.dark .glass-effect {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    body:not(.dark) .glass-effect {
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    body.dark .text-theme-primary { color: #f3f4f6; }
+    body:not(.dark) .text-theme-primary { color: #1f2937; }
+    body.dark .text-theme-secondary { color: #d1d5db; }
+    body:not(.dark) .text-theme-secondary { color: #4b5563; }
+    body.dark .text-theme-accent { color: #2dd4bf; }
+    body:not(.dark) .text-theme-accent { color: #0d9488; }
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #0d9488;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1000;
+    }
+    .hero-section video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      opacity: 0.6;
+    }
+    .hero-section .content {
+      position: relative;
+      z-index: 1;
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0px); }
+    }
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+    .expanded-section {
+      padding: 2rem;
+    }
+    .model-container {
+      position: relative;
+      min-height: 600px;
+    }
+    .model-container model-viewer {
+      width: 100%;
+      height: 600px;
+    }
+    .quote {
+      text-align: center;
+      margin-top: 1rem;
+      color: #020200;
+      font-style: italic;
+    }
+    body.dark .quote {
+    color: #FFFFFF;
+  }
+  #chat-container {
+    display: none; /* Initially hidden, toggled by JavaScript */
+    position: fixed;
+    bottom: 20px; /* Align with chat-toggle for consistency */
+    right: 20px;
+    width: 350px;
+    height: 450px;
+    background: linear-gradient(135deg, #1e3a8a, #0d9488);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 9999; 
+}
+
+#chat-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+body.dark #chat-container {
+    background: linear-gradient(135deg, #111827, #1e3a8a);
+}
+
+#chat-header {
+    background: linear-gradient(90deg, #0d9488, #1e3a8a);
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#chat-messages {
+    height: 340px;
+    overflow-y: auto;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+    color: #f3f4f6;
+}
+
+#chat-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+    background: #0d9488;
+    border-radius: 4px;
+}
+
+#chat-messages::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+#chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+    align-items: center;
+}
+
+body.dark #chat-input {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#user-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #f3f4f6;
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    margin-right: 10px;
+}
+
+#user-input:focus {
+    outline: none;
+    border-color: #2dd4bf;
+    box-shadow: 0 0 5px rgba(45, 212, 191, 0.5);
+}
+
+body.dark #user-input {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+#send-btn {
+    padding: 8px 20px;
+    margin-left: 10px;
+    background: linear-gradient(90deg, #2dd4bf, #1e3a8a);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+#send-btn:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #1e3a8a, #2dd4bf);
+}
+
+#chat-toggle {
+    position: fixed;
+    bottom: 20px; /* Consistent bottom spacing */
+    right: 20px;
+    background: linear-gradient(45deg, #1857a0, #111111);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(224, 250, 79, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 10000; /* Ensure toggle is above container */
+}
+
+#chat-toggle:hover {
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 8px 20px rgba(7, 43, 40, 0.7);
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 80%;
+}
+
+.user-message {
+    background: linear-gradient(90deg, #2dd4bf, #0d9488);
+    color: white;
+    margin-left: auto;
+    text-align: right;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+body.dark .user-message {
+    background: linear-gradient(90deg, #0d9488, #1e3a8a);
+}
+
+.bot-message {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f3f4f6;
+    margin-right: auto;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+body.dark .bot-message {
+    background: rgba(255, 255, 255, 0.05);
+}
+  </style>
+</head>
+<body class="font-['Inter'] transition-all duration-300 min-h-screen">
+  <div id="loader" class="loader hidden"></div>
+  <header class="flex flex-col items-center">
+    <div class="w-full bg-blue-900/80 glass-effect py-3 px-4 sm:px-6 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <h1 class="text-xl sm:text-2xl font-bold text-theme-accent">LungVision AI</h1>
+      </div>
+     <nav class="flex items-center space-x-4 sm:space-x-6">
+    <a href="#about-project" class="text-theme-secondary hover:text-theme-accent transition duration-300 text-sm sm:text-base">About</a>
+    <a href="{{ url_for('serve_documentation') }}" class="text-theme-secondary hover:text-theme-accent transition duration-300 text-sm sm:text-base">Documentation</a>
+    <a href="https://www.who.int/news-room/fact-sheets/detail/lung-cancer" class="text-theme-secondary hover:text-theme-accent transition duration-300 text-sm sm:text-base">More Info</a>
+    <a href="#" id="loginButton" class="flex items-center space-x-2 px-3 py-2 rounded-full bg-teal-600/80 text-white text-sm sm:text-base font-medium glass-effect login-btn-glow pulse-animate focus:outline-none">
+        <i class="fas fa-user text-white"></i>
+        <span>Login</span>
+    </a>
+    <button id="themeToggleButton" class="p-2 sm:p-3 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition duration-300 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-teal-400">
+        <i id="themeIcon" class="fas fa-moon text-theme-accent text-lg sm:text-xl"></i>
+    </button>
+</nav>
+    </div>
+  </header>
+
+  <section class="relative h-[80vh] flex items-center justify-center text-center px-4 sm:px-6 hero-section">
+    <video autoplay loop muted style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.6;">
+      <source src="{{ url_for('static', filename='videos/doctor video.mp4') }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div class="content animate-fade-in">
+      <h1 class="text-4xl sm:text-5xl md:text-7xl font-bold text-theme-primary mb-4 tracking-tight drop-shadow-lg">Multimodal Lung Cancer Detection</h1>
+      <p class="text-lg sm:text-xl md:text-2xl text-theme-secondary mb-8 max-w-2xl mx-auto">A cutting-edge tool for early diagnosis, empowering better outcomes through advanced medical imaging and AI.</p>
+      <a href="{{ url_for('diagnosis') }}" class="back-to-home-btn glow-animate text-base sm:text-lg">Start Diagnosis</a>
+    </div>
+  </section>
+
+  <section class="max-w-7xl mx-auto p-4 sm:p-6 flex flex-row">
+    <div class="w-2/3 pr-4">
+      <section id="about-project" class="max-w-5xl mx-auto p-4 sm:p-6 expanded-section" data-aos="flip-up" data-aos-duration="1200" data-aos-easing="ease-in-out">
+    <div class="bg-white/10 glass-effect rounded-xl p-6 sm:p-8 shadow-lg transform hover:scale-105 transition duration-500">
+        <h2 class="text-2xl sm:text-3xl font-semibold text-theme-accent mb-4 text-center">About the Project</h2>
+        <p class="text-theme-secondary text-base sm:text-lg text-center max-w-3xl mx-auto">
+            The Early Lung Cancer Detection project leverages advanced medical imaging and data analysis to identify lung cancer at its earliest stages. By combining X-ray, CT scans, and clinical data, our tool assists healthcare professionals in making faster and more accurate diagnoses, ultimately improving patient outcomes through timely interventions.
+        </p>
+    </div>
+</section>
+
+      <section class="max-w-5xl mx-auto p-4 sm:p-6 expanded-section" data-aos="fade-right" data-aos-duration="1200" data-aos-easing="ease-in-out">
+        <h2 class="text-2xl sm:text-3xl font-semibold text-theme-accent mb-8 text-center">How It Works</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 text-center transform hover:scale-105 transition duration-500" data-aos="fade-in" data-aos-delay="100" data-aos-duration="1000" data-aos-easing="ease-in-out">
+            <div class="text-3xl sm:text-4xl mb-4">📤</div>
+            <h3 class="text-lg sm:text-xl font-medium text-theme-primary mb-2">Upload Data</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">Upload your X-ray, CT scan, or clinical data securely through our intuitive interface.</p>
+          </div>
+          <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 text-center transform hover:scale-105 transition duration-500" data-aos="fade-in" data-aos-delay="200" data-aos-duration="1000" data-aos-easing="ease-in-out">
+            <div class="text-3xl sm:text-4xl mb-4">🤖</div>
+            <h3 class="text-lg sm:text-xl font-medium text-theme-primary mb-2">AI Analysis</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">Our advanced AI models analyze the data to detect early signs of lung cancer with high accuracy.</p>
+          </div>
+          <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 text-center transform hover:scale-105 transition duration-500" data-aos="fade-in" data-aos-delay="300" data-aos-duration="1000" data-aos-easing="ease-in-out">
+            <div class="text-3xl sm:text-4xl mb-4">📊</div>
+            <h3 class="text-lg sm:text-xl font-medium text-theme-primary mb-2">Get Results</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">Receive detailed results and insights to assist in diagnosis and treatment planning.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="w-1/3 pl-4">
+      <div class="model-container" data-aos="fade-up" data-aos-duration="1200" data-aos-easing="ease-in-out">
+        <model-viewer src="{{ url_for('static', filename='models/realistic_human_lungs.glb') }}" alt="3D Lung Model" auto-rotate camera-controls shadow-intensity="1" exposure="0.8" style="width: 100%; height: 500px;" class="float-animation">
+          <button slot="ar-button" id="ar-button">View in AR</button>
+        </model-viewer>
+        <p class="quote">"The lungs are the essential bellows of life, tirelessly working to fuel every breath with vitality." - Dr. William Osler</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Full-width sections start here -->
+  <section class="max-w-full mx-auto px-4 sm:px-6">
+
+    <section class="max-w-full mx-auto p-4 sm:p-6 expanded-section" data-aos="zoom-in" data-aos-duration="1200" data-aos-easing="ease-in-out">
+      <h2 class="text-2xl sm:text-3xl font-semibold text-theme-accent mb-8 text-center">Technologies We Use</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 flex items-center space-x-4 transform hover:scale-105 transition duration-500" data-aos="slide-up" data-aos-delay="100" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-2xl sm:text-3xl">🐍</div>
+          <div>
+            <h3 class="text-base sm:text-lg font-medium text-theme-primary">Python</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">For data processing and machine learning model development.</p>
+          </div>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 flex items-center space-x-4 transform hover:scale-105 transition duration-500" data-aos="slide-up" data-aos-delay="200" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-2xl sm:text-3xl">🧠</div>
+          <div>
+            <h3 class="text-base sm:text-lg font-medium text-theme-primary">PyTorch</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">For building and training deep learning models for image analysis.</p>
+          </div>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 flex items-center space-x-4 transform hover:scale-105 transition duration-500" data-aos="slide-up" data-aos-delay="300" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-2xl sm:text-3xl">📷</div>
+          <div>
+            <h3 class="text-base sm:text-lg font-medium text-theme-primary">OpenCV</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">For image preprocessing and feature extraction from X-rays and CT scans.</p>
+          </div>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 flex items-center space-x-4 transform hover:scale-105 transition duration-500" data-aos="slide-up" data-aos-delay="400" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-2xl sm:text-3xl">📈</div>
+          <div>
+            <h3 class="text-base sm:text-lg font-medium text-theme-primary">Pandas</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">For handling and analyzing clinical data in CSV format.</p>
+          </div>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 flex items-center space-x-4 transform hover:scale-105 transition duration-500" data-aos="slide-up" data-aos-delay="500" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-2xl sm:text-3xl">⚛</div>
+          <div>
+            <h3 class="text-base sm:text-lg font-medium text-theme-primary">React</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">For creating an interactive and user-friendly web interface.</p>
+          </div>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 flex items-center space-x-4 transform hover:scale-105 transition duration-500" data-aos="slide-up" data-aos-delay="600" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-2xl sm:text-3xl">🎨</div>
+          <div>
+            <h3 class="text-base sm:text-lg font-medium text-theme-primary">Tailwind CSS</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">For styling the web application with a modern design.</p>
+          </div>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 flex items-center space-x-4 transform hover:scale-105 transition duration-500" data-aos="slide-up" data-aos-delay="700" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-2xl sm:text-3xl">🌐</div>
+          <div>
+            <h3 class="text-base sm:text-lg font-medium text-theme-primary">Flask</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">For creating robust web applications and API endpoints.</p>
+          </div>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 flex items-center space-x-4 transform hover:scale-105 transition duration-500" data-aos="slide-up" data-aos-delay="800" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-2xl sm:text-3xl">💎</div>
+          <div>
+            <h3 class="text-base sm:text-lg font-medium text-theme-primary">Gemini API</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">For advanced AI-powered analysis and natural language processing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-full mx-auto p-4 sm:p-6 expanded-section" data-aos="fade-left" data-aos-duration="1200" data-aos-easing="ease-in-out">
+      <h2 class="text-2xl sm:text-3xl font-semibold text-theme-accent mb-8 text-center">Why Early Detection Matters</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 text-center transform hover:scale-105 transition duration-500" data-aos="flip-left" data-aos-delay="100" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-4xl sm:text-5xl font-bold text-theme-accent mb-2">90%</div>
+          <p class="text-theme-secondary text-sm sm:text-base">Survival rate when lung cancer is detected early.</p>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 text-center transform hover:scale-105 transition duration-500" data-aos="flip-left" data-aos-delay="200" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-4xl sm:text-5xl font-bold text-theme-accent mb-2">1.8M</div>
+          <p class="text-theme-secondary text-sm sm:text-base">New lung cancer cases diagnosed globally each year.</p>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 text-center transform hover:scale-105 transition duration-500" data-aos="flip-left" data-aos-delay="300" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-4xl sm:text-5xl font-bold text-theme-accent mb-2">5X</div>
+          <p class="text-theme-secondary text-sm sm:text-base">More likely to survive with early intervention.</p>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 text-center transform hover:scale-105 transition duration-500" data-aos="flip-left" data-aos-delay="400" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-4xl sm:text-5xl font-bold text-theme-accent mb-2">80%</div>
+          <p class="text-theme-secondary text-sm sm:text-base">Reduction in treatment costs with early stage detection.</p>
+        </div>
+        <div class="bg-white/10 glass-effect rounded-xl p-4 sm:p-6 text-center transform hover:scale-105 transition duration-500" data-aos="flip-left" data-aos-delay="500" data-aos-duration="1000" data-aos-easing="ease-in-out">
+          <div class="text-4xl sm:text-5xl font-bold text-theme-accent mb-2">70%</div>
+          <p class="text-theme-secondary text-sm sm:text-base">Of lung cancers are diagnosed at advanced stages when symptoms appear.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-full mx-auto p-4 sm:p-6 expanded-section" data-aos="fade-down" data-aos-duration="1200" data-aos-easing="ease-in-out">
+      <div class="bg-white/10 glass-effect rounded-xl p-6 sm:p-8 shadow-lg">
+        <h2 class="text-2xl sm:text-3xl font-semibold text-theme-accent mb-4 text-center">Connect with Us</h2>
+        <p class="text-theme-secondary mb-6 text-center text-sm sm:text-base">Meet the team behind this project and feel free to reach out!</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-2xl mx-auto">
+          <div class="text-center">
+            <p class="font-medium text-theme-primary text-sm sm:text-base">Junaid Shariff</p>
+            <div class="flex flex-col space-y-2">
+              <a href="https://www.linkedin.com/in/junaid-shariff10/" class="text-theme-accent hover:underline text-sm sm:text-base">
+                <i class="fab fa-linkedin mr-1"></i>LinkedIn
+              </a>
+              <a href="https://github.com/insjunaid" class="text-theme-accent hover:underline text-sm sm:text-base">
+                <i class="fab fa-github mr-1"></i>GitHub
+              </a>
+              <a href="mailto:shariffjunaid2004@gmail.com" class="text-theme-accent hover:underline text-sm sm:text-base">
+                <i class="fas fa-envelope mr-1"></i>Email
+              </a>
+            </div>
+          </div>
+          <div class="text-center">
+            <p class="font-medium text-theme-primary text-sm sm:text-base">Mohammed Adan</p>
+            <div class="flex flex-col space-y-2">
+              <a href="https://www.linkedin.com/in/mohammed-adan-406349339" class="text-theme-accent hover:underline text-sm sm:text-base">
+                <i class="fab fa-linkedin mr-1"></i>LinkedIn
+              </a>
+              <a href="https://github.com/Adanrockzz122" class="text-theme-accent hover:underline text-sm sm:text-base">
+                <i class="fab fa-github mr-1"></i>GitHub
+              </a>
+              <a href="mailto:mohammedadan270@gmail.com" class="text-theme-accent hover:underline text-sm sm:text-base">
+                <i class="fas fa-envelope mr-1"></i>Email
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <footer class="bg-blue-950 text-theme-secondary text-center py-6 w-full">
+    <p class="mb-2 text-sm sm:text-base">© 2025 Multimodal Lung Cancer Detection Team. All rights reserved.</p>
+    <nav class="flex justify-center space-x-4">
+      <a href="{{ url_for('serve_documentation') }}" class="text-theme-accent hover:underline text-sm sm:text-base">Documentation</a>
+      <a href="https://www.who.int/news-room/fact-sheets/detail/lung-cancer" class="text-theme-accent hover:underline text-sm sm:text-base">More Info</a>
+    </nav>
+  </footer>
+
+  <!-- Chatbot UI -->
+  <div id="chat-container">
+    <div id="chat-header">VisuLung</div>
+    <div id="chat-messages"></div>
+    <div id="chat-input">
+        <input type="text" id="user-input" placeholder="Ask a question...">
+        <button id="send-btn">Send</button>
+    </div>
+  </div>
+  <button id="chat-toggle">💬</button>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+ <script>
+  window.onload = function() {
+    const themeToggleButton = document.getElementById('themeToggleButton');
+    const themeIcon = document.getElementById('themeIcon');
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark');
+      themeIcon.classList.remove('fa-sun');
+      themeIcon.classList.add('fa-moon');
+    } else {
+      document.body.classList.remove('dark');
+      themeIcon.classList.remove('fa-moon');
+      themeIcon.classList.add('fa-sun');
+    }
+    themeToggleButton.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const isDarkMode = document.body.classList.contains('dark');
+      themeIcon.classList.remove('fa-sun', 'fa-moon', 'spin');
+      if (isDarkMode) {
+        themeIcon.classList.add('fa-moon', 'spin');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        themeIcon.classList.add('fa-sun', 'spin');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+    themeToggleButton.addEventListener('mouseover', () => {
+      const isDarkMode = document.body.classList.contains('dark');
+      themeIcon.classList.remove('fa-sun', 'fa-moon');
+      if (isDarkMode) {
+        themeIcon.classList.add('fa-sun');
+      } else {
+        themeIcon.classList.add('fa-moon');
+      }
+    });
+    themeToggleButton.addEventListener('mouseout', () => {
+      const isDarkMode = document.body.classList.contains('dark');
+      themeIcon.classList.remove('fa-sun', 'fa-moon');
+      if (isDarkMode) {
+        themeIcon.classList.add('fa-moon');
+      } else {
+        themeIcon.classList.add('fa-sun');
+      }
+    });
+
+    const loginButton = document.getElementById('loginButton');
+    const loader = document.getElementById('loader');
+    loginButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.body.classList.add('fade-out');
+      loader.classList.remove('hidden');
+      setTimeout(() => {
+        window.location.href = '{{ url_for('login') }}';
+      }, 500);
+    });
+
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    AOS.init({
+      duration: 800, 
+  once: true, 
+  offset: 50, 
+  disable: 'mobile' 
+});
+} 
+</script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</body>
+</html>

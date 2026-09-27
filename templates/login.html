@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LungVision AI - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      body {
+        background: linear-gradient(to bottom right, #0a1e3d, #1e3a8a, #0d947a, #2d3748);
+        color: #f3f4f6;
+        font-family: 'Inter', sans-serif;
+        height: 100vh; /* Maintains full height */
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .star {
+        position: absolute;
+        background: rgba(255, 215, 0, 0.8);
+        border-radius: 50%;
+        animation: twinkle 3s infinite alternate;
+      }
+      @keyframes twinkle {
+        from { opacity: 0.4; }
+        to { opacity: 0.9; }
+      }
+      .login-container {
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.1);
+        padding: 3.5rem;
+        width: 100%;
+        max-width: 480px;
+        position: relative;
+        border-radius: 1.75rem;
+        animation: float 5s infinite ease-in-out;
+        z-index: 1;
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+      }
+      .login-container::before {
+        content: '';
+        position: absolute;
+        top: -60%;
+        left: -60%;
+        width: 220%;
+        height: 220%;
+        background: radial-gradient(circle, rgba(13, 148, 136, 0.25) 0%, rgba(255, 215, 0, 0.05) 70%, transparent 100%);
+        animation: rotate 20s linear infinite;
+        z-index: -1;
+      }
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      h2 {
+        font-size: 2.75rem;
+        font-weight: 700;
+        color: #14b8a6;
+        text-shadow: 0 0 15px rgba(20, 184, 166, 0.8), 0 0 5px rgba(255, 215, 0, 0.3);
+        margin-bottom: 2rem;
+        text-align: center;
+        letter-spacing: 1px;
+      }
+      .form-group {
+        margin-bottom: 2rem;
+      }
+      .form-group label {
+        display: block;
+        font-size: 1rem;
+        color: #d1d5db;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border-radius: 0.625rem;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5));
+        color: #fff;
+        font-size: 1.1rem;
+        transition: all 0.4s ease;
+        box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.4);
+      }
+      .form-group input:focus {
+        outline: none;
+        box-shadow: 0 0 20px rgba(20, 184, 166, 0.7), inset 0 3px 6px rgba(0, 0, 0, 0.4);
+        transform: scale(1.03);
+      }
+      button {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(90deg, #0d9488, #14b8a6, #6ee7b7);
+        border-radius: 0.625rem;
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.5s ease;
+        box-shadow: 0 8px 20px rgba(13, 148, 136, 0.6);
+        position: relative;
+        overflow: hidden;
+      }
+      button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 215, 0, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.7s ease, height 0.7s ease;
+      }
+      button:hover {
+        transform: scale(1.002);
+        box-shadow: 0 8px 20px rgba(13, 148, 136, 0.62);
+      }
+      button:hover::after {
+        width: 75%;
+        height: 75%;
+      }
+      .nav-buttons {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        z-index: 2;
+      }
+      .return-btn, .create-account-btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        color: #fff;
+        font-weight: 500;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.4s ease;
+        box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+      }
+      .return-btn {
+        background: linear-gradient(to bottom, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+      }
+      .create-account-btn {
+        background: linear-gradient(to bottom, rgba(13, 148, 136, 0.2), rgba(20, 184, 166, 0.1));
+      }
+      .return-btn:hover, .create-account-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(255, 215, 0, 0.4);
+      }
+      .return-btn .loading, .create-account-btn .loading {
+        display: none;
+        margin-left: 0.5rem;
+      }
+      .return-btn.loading .loading, .create-account-btn.loading .loading {
+        display: inline-block;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      #message {
+        text-align: center;
+        margin-top: 1rem;
+        color: #f87171;
+        font-size: 1rem;
+        animation: pulse 1.5s infinite alternate;
+      }
+      @keyframes pulse {
+        from { opacity: 0.8; transform: scale(1); }
+        to { opacity: 1; transform: scale(1.05); }
+      }
+      .canvas-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+      }
+      .fade-slide-out {
+        animation: fadeSlideOut 0.6s ease-out forwards;
+      }
+      @keyframes fadeSlideOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-20px); }
+      }
+      .fade-slide-in {
+        animation: fadeSlideIn 0.6s ease-out forwards;
+      }
+      @keyframes fadeSlideIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .forgot-password {
+        text-align: right;
+        margin-top: -1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .forgot-password a {
+        color: #2dd4bf;
+        text-decoration: underline;
+        font-size: 0.9rem;
+      }
+      .remember-me-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #d1d5db;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center relative">
+  <div class="canvas-container" id="canvas-container"></div>
+  <div class="nav-buttons">
+    <a href="#" id="return-btn" class="return-btn">
+      Return to Homepage
+      <i class="fas fa-spinner loading"></i>
+    </a>
+    <a href="#" id="create-account-btn" class="create-account-btn">
+      Create New Account
+      <i class="fas fa-spinner loading"></i>
+    </a>
+  </div>
+  <div class="login-container fade-slide-in" id="login-container">
+    <h2>LungVision AI Login</h2>
+    <form id="loginForm" action="/login" method="POST">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      </div>
+      <div class="forgot-password">
+        <a href="/forgot_password">Forgot Password?</a>
+      </div>
+      <div class="remember-me-group">
+        <input type="checkbox" id="rememberMe" name="rememberMe">
+        <label for="rememberMe">Remember Me</label>
+      </div>
+      <p id="message"></p>
+      <button type="submit">Access LungVision</button>
+    </form>
+  </div>
+  <script src="{{ url_for('static', filename='js/validate.js') }}"></script>
+  <script>
+    // Create stars
+    function createStars(count) {
+      const container = document.getElementById('canvas-container');
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.width = `${Math.random() * 4 + 1}px`;
+        star.style.height = star.style.width;
+        star.style.left = `${Math.random() * 100}vw`;
+        star.style.top = `${Math.random() * 100}vh`;
+        star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+        container.appendChild(star);
+      }
+    }
+    createStars(60);
+
+    // Pre-fill email if Remember Me was checked
+    const emailInput = document.getElementById('email');
+    const rememberMe = document.getElementById('rememberMe');
+    if (localStorage.getItem('rememberEmail')) {
+      emailInput.value = localStorage.getItem('rememberEmail');
+      rememberMe.checked = true;
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const message = document.getElementById('message');
+
+      message.textContent = '';
+
+      if (!email && !password) {
+        message.textContent = 'Please fill both the email and password fields.';
+      } else if (!email) {
+        message.textContent = 'Please fill the email field.';
+      } else if (!password) {
+        message.textContent = 'Please fill the password field.';
+      } else {
+        fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, password: password })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Server error');
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            if (rememberMe.checked) {
+              localStorage.setItem('rememberEmail', email);
+            } else {
+              localStorage.removeItem('rememberEmail');
+            }
+            window.location.href = '/diagnosis';
+          } else if (data.error === 'account_not_found') {
+            message.textContent = 'Account not found. Please check your email or register.';
+          } else if (data.error === 'incorrect_password') {
+            message.textContent = 'Invalid credentials. Incorrect password.';
+          } else {
+            message.textContent = 'Login failed. Please try again later.';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          if (error.message.includes('network')) {
+            message.textContent = 'Network error. Please check your connection.';
+          } else if (error.message.includes('server')) {
+            message.textContent = 'Server is temporarily unavailable. Please try again later.';
+          } else {
+            message.textContent = 'An unexpected error occurred. Please try again.';
+          }
+        });
+      }
+    });
+
+    const returnBtn = document.getElementById('return-btn');
+    returnBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      this.classList.add('loading');
+      document.getElementById('login-container').classList.add('fade-slide-out');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 600); // Matches animation duration
+    });
+
+    const createAccountBtn = document.getElementById('create-account-btn');
+    createAccountBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      this.classList.add('loading');
+      document.getElementById('login-container').classList.add('fade-slide-out');
+      setTimeout(() => {
+        window.location.href = '/register';
+      }, 600); // Matches animation duration
+    });
+  </script>
+</body>
+</html>

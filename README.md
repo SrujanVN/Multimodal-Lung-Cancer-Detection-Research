@@ -54,6 +54,28 @@ Local secrets, virtual environments, dependency folders, generated reports/uploa
 - Node.js and npm.
 - Enough memory and disk space for PyTorch, the model checkpoints, and image inference. A CUDA-enabled PyTorch install is optional; CPU inference may be slower.
 
+### Run the full app with Docker Compose
+
+Docker Compose runs the Flask inference/API service and a production-built React app behind Nginx. The model checkpoints and clinical scaler are included in the backend image so it can run on a Docker host without model bind mounts. The SQLite database, uploads, and generated reports persist in local folders. Image inference uses CPU-only PyTorch in this setup.
+
+Create your private environment file once, then set a strong `SECRET_KEY`. `GEMINI_API_KEY` is optional and enables Gemini-backed chat:
+
+```powershell
+Copy-Item .env.example .env
+notepad .env
+docker compose up --build -d
+```
+
+Open [http://localhost:8080](http://localhost:8080). Compose waits for the API health check, which verifies that all eight image checkpoints and the clinical model/scaler load. Follow startup and inference logs with `docker compose logs -f`; shut down the stack with `docker compose down`. The persistent `instance`, `static/uploads`, and `static/reports` folders remain on the host after shutdown. Set `APP_PORT` in `.env` to change the browser port.
+
+The initial build downloads Python and Node dependencies and can take several minutes. Docker Desktop should have enough memory for PyTorch and the models. Keep `.env` private; it is ignored by Git and excluded from the Docker build context.
+
+### Deploy the frontend on Vercel
+
+The Vercel project should use `frontend/` as its Root Directory. `frontend/vercel.ts` configures the Vite build, SPA fallback, and same-origin proxy rewrites for the Flask API and returned image/report URLs. Set `BACKEND_URL` in the Vercel project's Preview and Production environments to the public HTTPS **origin** of the separately hosted backend (for example `https://api.example.com`, with no path). Vercel will fail the build if this URL is missing or is not HTTPS.
+
+Build and deploy the Dockerized backend on a host that supports persistent container storage. Set `SECRET_KEY` and, optionally, `GEMINI_API_KEY` as backend environment secrets. Do not add Gemini credentials to Vercel frontend variables. Keep writable storage persistent for `instance/`, `static/uploads/`, and `static/reports/`; predictions or uploads may contain sensitive data. Do not use real patient scans or identifiable clinical records for a public demonstration. After the backend has a public HTTPS address, add it as `BACKEND_URL` in Vercel, connect the Git repository, choose the `frontend` root, and deploy.
+
 ### Backend
 
 From the repository root, create and activate a virtual environment, install the dependencies, and create a private `.env` file from the example:

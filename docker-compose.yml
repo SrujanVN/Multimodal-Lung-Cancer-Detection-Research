@@ -1,41 +1,38 @@
-
-
 services:
-  lungvision-app:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: lungvision_ai
-    ports:
-      - "5000:5000"
+    environment:
+      FLASK_APP: app.py
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env before starting}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.8-flash}
+      PORT: 5000
+      MPLBACKEND: Agg
     volumes:
-      # Persist database and uploads
       - ./instance:/app/instance
       - ./static/uploads:/app/static/uploads
-      # Mount models (read-only for security)
-      - ./models:/app/models:ro
-      - ./scaler.pkl:/app/scaler.pkl:ro
-    environment:
-      - FLASK_APP=app.py
-      - FLASK_ENV=production
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - SECRET_KEY=${SECRET_KEY}
-    env_file:
-      - .env
+      - ./static/reports:/app/static/reports
     restart: unless-stopped
-    networks:
-      - lungvision-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      test:
+        - CMD
+        - python
+        - -c
+        - "import json, urllib.request; d=json.load(urllib.request.urlopen('http://127.0.0.1:5000/api/health', timeout=8)); assert d.get('status') == 'ok' and len(d.get('models', {}).get('ct', [])) == 4 and len(d.get('models', {}).get('xray', [])) == 4 and d.get('clinical_model_available')"
       interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      timeout: 12s
+      retries: 5
+      start_period: 180s
 
-networks:
-  lungvision-network:
-    driver: bridge
-
-volumes:
-  uploads-data:
-  instance-data:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-8080}:80"
+    restart: unless-stopped

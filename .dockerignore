@@ -1,72 +1,26 @@
-# Python
-__pycache__/
+.git
+.venv
+venv
+ENV
+env
+__pycache__
 *.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
-venv/
-ENV/
-Xray_Model_Notebooks/
-CT_Scan_Model_Notebooks/
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Git
-.git/
-.gitignore
-
-# Documentation
-*.md
-README.md
-
-# Jupyter Notebooks
-*.ipynb
-.ipynb_checkpoints/
-
-# Logs
 *.log
-
-# Environment variables (will be passed at runtime)
-.env.local
-.env.development
-
-# Uploads (will be volume mounted)
-static/uploads/*
-
-# Database (will be volume mounted)
-instance/
+*.tmp
+.env
+.env.*
+!.env.example
+instance
 *.db
-
-# Docker
-Dockerfile
-docker-compose.yml
-.dockerignore
+static/uploads
+static/reports
+static/mpl-cache
+.matplotlib-cache
+frontend/node_modules
+frontend/dist
+frontend/tsconfig.tsbuildinfo
+frontend/build-output.txt
+node_modules
+notebooks
+*.ipynb
+FRONTEND_AUDIT.md

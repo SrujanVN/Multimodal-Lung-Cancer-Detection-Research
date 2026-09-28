@@ -1,42 +1,41 @@
-# Use Python 3.10 slim image for smaller size
-FROM python:3.10-slim
+FROM python:3.11-slim
 
-# Set working directory
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    MPLBACKEND=Agg \
+    OMP_NUM_THREADS=4 \
+    PORT=5000
+
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
-    libxrender-dev \
+    libxrender1 \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+COPY requirements.txt ./requirements.txt
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# This research service runs CPU inference in Compose. Avoid downloading CUDA
+# libraries into the image; keep the torch/torchvision versions paired.
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch torchvision \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY . .
+COPY app.py ./app.py
+COPY chatbot/ ./chatbot/
+COPY templates/ ./templates/
+COPY static/ ./static/
+COPY models/ ./models/
+COPY scaler.pkl ./scaler.pkl
 
-# Create necessary directories
-RUN mkdir -p static/uploads models/ct_models models/xray_models instance
+RUN mkdir -p /app/instance /app/static/uploads /app/static/reports
 
-# Set environment variables
-ENV FLASK_APP=app.py
-ENV PYTHONUNBUFFERED=1
-ENV PORT=5000
-
-# Expose port
 EXPOSE 5000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5000/', timeout=5)"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=5 \
+    CMD python -c "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/api/health' % os.getenv('PORT', '5000'), timeout=5)" || exit 1
 
-# Run the application with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--threads", "4", "--timeout", "300", "--preload", "--access-logfile", "-", "--error-logfile", "-", "app:app"]
+CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 1 --threads 4 --timeout 300 --preload --access-logfile - --error-logfile - app:app"]

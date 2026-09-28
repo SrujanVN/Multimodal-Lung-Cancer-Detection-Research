@@ -1,8 +1,29 @@
+async function readJsonResponse<T>(response: Response, action: string): Promise<T> {
+  const body = await response.text();
+  let data: { error?: string } & Record<string, unknown>;
+
+  try {
+    data = JSON.parse(body) as { error?: string } & Record<string, unknown>;
+  } catch {
+    if (response.status === 401) {
+      throw new Error('Please sign in before running this analysis.');
+    }
+    if (response.status >= 500) {
+      throw new Error('The backend returned an unexpected response. It may be temporarily unavailable; please try again shortly.');
+    }
+    throw new Error(`${action} returned an unexpected response (HTTP ${response.status}). Please refresh and try again.`);
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || `${action} failed (HTTP ${response.status}).`);
+  }
+
+  return data as T;
+}
+
 export async function postJson<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
-  return data as T;
+  return readJsonResponse<T>(response, 'Request');
 }
 
 export type ModelPrediction = {
@@ -38,9 +59,7 @@ export type PredictionResponse = {
 
 export async function predictImage(form: FormData): Promise<PredictionResponse> {
   const response = await fetch('/api/predict/image', { method: 'POST', credentials: 'include', body: form });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error || `Prediction failed (${response.status})`);
-  return data as PredictionResponse;
+  return readJsonResponse<PredictionResponse>(response, 'Prediction');
 }
 
 export async function predictClinical(input: Record<string, string>): Promise<PredictionResponse> {
@@ -62,9 +81,7 @@ export async function predictCsv(file: File): Promise<CsvCohortResponse> {
   const form = new FormData();
   form.set('file', file);
   const response = await fetch('/api/predict/csv', { method: 'POST', credentials: 'include', body: form });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error || `CSV analysis failed (${response.status})`);
-  return data as CsvCohortResponse;
+  return readJsonResponse<CsvCohortResponse>(response, 'CSV analysis');
 }
 
 export type ChatResponse = {
@@ -79,7 +96,7 @@ export async function sendChat(message: string, conversationId: string, context?
 
 export async function downloadReport(body: unknown) {
   const response = await fetch('/download_report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body) });
-  if (!response.ok) { const data = await response.json(); throw new Error(data.error || 'Report generation failed'); }
+  if (!response.ok) await readJsonResponse<never>(response, 'Report generation');
   const url = URL.createObjectURL(await response.blob());
   const link = document.createElement('a'); link.href = url; link.download = 'Multimodal_Lung_Cancer_Research_Report.pdf'; link.click(); URL.revokeObjectURL(url);
 }

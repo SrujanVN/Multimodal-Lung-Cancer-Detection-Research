@@ -4,6 +4,30 @@ A research and education web application for exploring lung disease image and cl
 
 > **Research use only.** Predictions and explanations are experimental model outputs. They are not diagnoses, screening decisions, or treatment advice. Do not use this application to make decisions about a person's care. A qualified healthcare professional must interpret clinical findings.
 
+## Table of contents
+
+- [Project demo video](#project-demo-video)
+- [What is included](#what-is-included)
+- [Repository layout](#repository-layout)
+- [Technology](#technology)
+- [Run locally](#run-locally)
+  - [Requirements](#requirements)
+  - [Run the full app with Docker Compose](#run-the-full-app-with-docker-compose)
+  - [Deploy the frontend on Vercel](#deploy-the-frontend-on-vercel)
+  - [Backend](#backend)
+  - [Frontend](#frontend)
+- [Models and data](#models-and-data)
+- [Explainability](#explainability)
+- [Chat assistant and sources](#chat-assistant-and-sources)
+- [Privacy and security](#privacy-and-security)
+- [Troubleshooting](#troubleshooting)
+- [Responsible use](#responsible-use)
+- [License and acknowledgements](#license-and-acknowledgements)
+
+## Project demo video
+
+[Watch the project demonstration on YouTube](https://youtu.be/gb8Gy-uV1K4)
+
 ## What is included
 
 - **CT image analysis:** ResNet50, DenseNet121, Inception-v3, and EfficientNet-B3 checkpoints, with individual-model and ensemble workflows.

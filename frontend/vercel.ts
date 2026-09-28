@@ -1,3 +1,5 @@
+import { routes } from '@vercel/config/v1';
+
 const backendUrl = process.env.BACKEND_URL;
 
 if (!backendUrl) {
@@ -30,15 +32,15 @@ export const config = {
   buildCommand: 'npm run build',
   outputDirectory: 'dist',
   rewrites: [
-    { source: '/api/:path*', destination: `${backend}/api/:path*` },
-    { source: '/static/:path*', destination: `${backend}/static/:path*` },
-    { source: '/uploads/:path*', destination: `${backend}/uploads/:path*` },
+    routes.rewrite('/api/:path*', `${backend}/api/:path*`),
+    routes.rewrite('/static/:path*', `${backend}/static/:path*`),
+    routes.rewrite('/uploads/:path*', `${backend}/uploads/:path*`),
     ...backendPaths.flatMap((path) => [
-      { source: `/${path}`, destination: `${backend}/${path}` },
-      { source: `/${path}/:path*`, destination: `${backend}/${path}/:path*` },
+      routes.rewrite(`/${path}`, `${backend}/${path}`),
+      routes.rewrite(`/${path}/:path*`, `${backend}/${path}/:path*`),
     ]),
-    { source: '/get_explanation/:path*', destination: `${backend}/get_explanation/:path*` },
-    { source: '/(.*)', destination: '/index.html' },
+    routes.rewrite('/get_explanation/:path*', `${backend}/get_explanation/:path*`),
+    routes.rewrite('/(.*)', '/index.html'),
   ],
   headers: [
     { source: '/api/:path*', headers: [{ key: 'Cache-Control', value: 'no-store' }] },

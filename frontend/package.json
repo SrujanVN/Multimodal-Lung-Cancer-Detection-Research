@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",
+    "@vercel/config": "^0.7.2",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
